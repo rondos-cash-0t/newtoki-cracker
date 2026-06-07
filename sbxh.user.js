@@ -8,7 +8,7 @@
 // @downloadURL  https://raw.githubusercontent.com/rondos-cash-0t/newtoki-cracker/refs/heads/main/sbxh.user.js
 // @license      MPL-2.0
 //
-// @version      1.0.0
+// @version      1.0.1
 // @author       You
 //
 // @grant        unsafeWindow
@@ -584,7 +584,7 @@
                 originalQuerySelectorAll,
                 document,
                 ["[data-br] img"]
-            ).length;
+            ).length + 1;
 
             if (isCanceled()) return;
 
