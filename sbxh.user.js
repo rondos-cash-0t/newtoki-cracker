@@ -62,7 +62,6 @@
     let routeTimer = null;
     let lastAckPath = "";
     let lastProcessedPath = location.pathname;
-    let allowCookieWrite = false;
 
     function log(loading, ...args) {
         console.debug(`[${tag}]`, ...args);
