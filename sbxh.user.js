@@ -151,7 +151,7 @@
     function cancelFakeAdShow() {
         if (fakeAdController) {
             fakeAdController.abort();
-            delete win.__ntk_ad_ack_scope;
+            removeDispatchAck();
             fakeAdController = null;
             log(true, 'fakeAdShow aborted!');
         }
