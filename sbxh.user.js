@@ -8,7 +8,7 @@
 // @downloadURL  https://raw.githubusercontent.com/rondos-cash-0t/newtoki-cracker/refs/heads/main/sbxh.user.js
 // @license      MPL-2.0
 //
-// @version      1.0.2
+// @version      1.0.3
 // @author       You
 //
 // @grant        unsafeWindow
@@ -737,29 +737,19 @@
                 }
             ], {signal: controller.signal});*/
 
-            // Added 2026-06-08
-            let tempCount = 0;
-            for (const path of selectedData) {
+            // 더 빠른 처리
+            try {
+                log(true, "Trying to image beacon...");
                 if (isCanceled()) return;
-                tempCount++;
-                log(true, `connecting temp page... | ${tempCount}/${selectedData.length}`);
-                /*const tempResponse = await retryFetch(originalFetch, win, [
-                    new URL(`https://${location.hostname}${path}`),
-                    {
-                        method: "GET",
-                        credentials: "include",
-                        keepalive: true
-                    }
-                ], {signal: controller.signal});
-                if (tempResponse.status >= 500) {
-                    log(true, "temp response error! aborted!");
-                    return;
-                }*/
-                // Fixed 2026-06-08
-                if (!await sendImageBeacon(`https://${location.hostname}${path}`)) {
-                    log(true, "temp error!");
-                    return;
-                }
+
+                await Promise.all(
+                    selectedData.map(path => sendImageBeacon(`https://${location.hostname}${path}`))
+                );
+
+                log(true, "Success!");
+            } catch (e) {
+                log(true, "Image beacon error...", e);
+                return;
             }
 
             if (isCanceled()) return;
