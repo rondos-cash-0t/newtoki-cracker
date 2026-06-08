@@ -8,7 +8,7 @@
 // @downloadURL  https://raw.githubusercontent.com/rondos-cash-0t/newtoki-cracker/refs/heads/main/sbxh.user.js
 // @license      MPL-2.0
 //
-// @version      1.0.1
+// @version      1.0.2
 // @author       You
 //
 // @grant        unsafeWindow
@@ -403,8 +403,8 @@
             "/api/m/i",
             "/api/nv-issue",
             "/api/me",
-            "/wasm/ad-guard/ad_guard.js",
-            "/wasm/ad-guard/ad_guard_bg.wasm"
+            "/api/ad/guard-js",
+            "/api/ad/guard-wasm"
         ]);
 
         const retryRefreshEndpoints = new Set([
@@ -444,6 +444,48 @@
 
                 return Reflect.apply(target, thisArg, args);
             }
+        });
+    }
+
+    async function sendImageBeacon(url, timeout = 5000) {
+        return new Promise((resolve, reject) => {
+            const img = new Image(1, 1);
+
+            const timer = setTimeout(() => {
+                img.remove();
+                resolve(false);
+            }, timeout);
+
+            img.referrerPolicy = 'strict-origin-when-cross-origin';
+            img.loading = 'eager';
+
+            Object.assign(img.style, {
+                position: 'absolute',
+                left: '-9999px',
+                top: '-9999px',
+                width: '1px',
+                height: '1px',
+                opacity: '0',
+                pointerEvents: 'none'
+            });
+
+            img.onload = () => {
+                clearTimeout(timer);
+                img.remove();
+                resolve(true);
+            };
+
+            img.onerror = () => {
+                clearTimeout(timer);
+                img.remove();
+
+                // 서버에는 요청이 갔을 가능성이 높음
+                resolve(true);
+            };
+
+            img.src = url;
+
+            document.documentElement.appendChild(img);
         });
     }
 
@@ -701,7 +743,7 @@
                 if (isCanceled()) return;
                 tempCount++;
                 log(true, `connecting temp page... | ${tempCount}/${selectedData.length}`);
-                const tempResponse = await retryFetch(originalFetch, win, [
+                /*const tempResponse = await retryFetch(originalFetch, win, [
                     new URL(`https://${location.hostname}${path}`),
                     {
                         method: "GET",
@@ -711,6 +753,11 @@
                 ], {signal: controller.signal});
                 if (tempResponse.status >= 500) {
                     log(true, "temp response error! aborted!");
+                    return;
+                }*/
+                // Fixed 2026-06-08
+                if (!await sendImageBeacon(`https://${location.hostname}${path}`)) {
+                    log(true, "temp error!");
                     return;
                 }
             }
